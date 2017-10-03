@@ -1,0 +1,11 @@
+- hosts: localhost
+  gather_facts: yes
+  remote_user: linus
+  tasks:
+    - name: print time
+      debug: var="'first' + {{ ansible_date_time.iso8601_basic_short }}"
+    
+    - pause: seconds=20
+
+    - name: print time
+      debug: var="{{ ansible_date_time.iso8601_basic_short }}"
