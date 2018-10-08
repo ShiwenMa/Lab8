@@ -7,7 +7,6 @@ import traceback
 import multiprocessing
 
 from ansible.inventory import Inventory
-from ansible.inventory.host import Host
 from ansible.playbook.play import Play
 from ansible.playbook.play_context import PlayContext
 from ansible.playbook.task import Task
@@ -124,7 +123,13 @@ def _process_pending_results():
          debug("got final result: %s" % (result,))
          pending_results -= 1
       except Queue.Empty:
+      if not res_q.empty():
+               debug("worker %d has data to read" % cur_worker)
+               result = res_q.get()
+               debug("got a result from worker %d: %s" % (cur_worker, result))
+               break
          pass
+      
 
 def _wait_on_pending_results():
    global pending_results
@@ -142,7 +147,6 @@ pending_results = 0
 var_manager = VariableManager()
 
 debug("loading inventory")
-inventory = Inventory(host_list='/tmp/med_inventory', loader=loader, variable_manager=var_manager)
 hosts = inventory.get_hosts()[:]
 debug("done loading inventory")
 
