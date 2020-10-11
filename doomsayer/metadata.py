@@ -38,3 +38,17 @@ def poll_instance_metadata():
     ec2.start_instances( InstanceIds = event['instances'] )
   elif 'stop' == event['action']:
     ec2.stop_instances( InstanceIds = event['instances'] )
+
+def count_instances(ec2):
+    total_instances = 0
+    instances = ec2.instances.filter(          Filters=[
+              {
+                  'Name': 'instance-state-name',
+                  'Values': [
+                      'running',
+                  ]
+              },
+        ])
+    for _ in instances:
+        total_instances += 1
+    return total_instances
